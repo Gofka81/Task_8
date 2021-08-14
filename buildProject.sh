@@ -1,0 +1,1 @@
+gradle buildProject > buildReports/buildLog.report
