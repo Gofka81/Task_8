@@ -5,6 +5,8 @@ public class Team {
     private String name;
     private int id;
 
+    public Team(){}
+
     public Team(String name){
         this.name = name;
     }
@@ -24,6 +26,10 @@ public class Team {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 
     public static Team createTeam(String name){
