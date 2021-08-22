@@ -57,6 +57,7 @@ dependencies {
 	compile 'com.google.guava:guava:21.0'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.25'
 }
 
 task buildProject(dependsOn: ['allProjectClear', 'build', 'jacocoTestReport', 'runTeacherTests'])
