@@ -23,14 +23,16 @@ public class DBManager {
 
     public void insertUser(User user)  {
         PreparedStatement pst = null;
-        if(user != null)
-            try {
-                pst = con.prepareStatement(Constant.INSERT_USER);
-                pst.setString(1, user.getLogin());
-                pst.execute();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        if(user == null){
+            return;
+        }
+        try {
+            pst = con.prepareStatement(Constant.INSERT_USER);
+            pst.setString(1, user.getLogin());
+            pst.execute();
+        } catch (SQLException | NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<User> findAllUsers(){
@@ -56,7 +58,7 @@ public class DBManager {
                 pst = con.prepareStatement(Constant.INSERT_TEAM);
                 pst.setString(1, team.getName());
                 pst.execute();
-            } catch (SQLException e) {
+            } catch (SQLException | NullPointerException e) {
                 e.printStackTrace();
             }
         }
@@ -72,7 +74,7 @@ public class DBManager {
             while (rs.next()){
                 teams.add(new Team(rs.getString("name")));
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             e.printStackTrace();
         }
         return teams;
@@ -86,7 +88,7 @@ public class DBManager {
             ResultSet rs = pst.executeQuery();
             if(rs.next())
                 return new Team(rs.getInt("id"),rs.getString("name"));
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             e.printStackTrace();
         }
         finally {
@@ -108,7 +110,7 @@ public class DBManager {
             ResultSet rs = pst.executeQuery();
             if(rs.next())
                 return new User(rs.getInt("id"),rs.getString("login"));
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             e.printStackTrace();
         }
         finally {
@@ -177,7 +179,7 @@ public class DBManager {
         try(PreparedStatement pst = con.prepareStatement(Constant.DELETE_TEAM)){
             pst.setInt(1,id);
             pst.execute();
-        }catch (SQLException ex){
+        }catch (SQLException | NullPointerException ex){
             ex.printStackTrace();
         }
     }
@@ -188,7 +190,7 @@ public class DBManager {
             pst.setString(1,team.getName());
             pst.setInt(2,team.getId());
             pst.execute();
-        }catch (SQLException ex){
+        }catch (SQLException | NullPointerException ex){
             ex.printStackTrace();
         }
     }
