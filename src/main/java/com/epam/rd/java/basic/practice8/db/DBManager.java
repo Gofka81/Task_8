@@ -23,14 +23,14 @@ public class DBManager {
 
     public void insertUser(User user)  {
         PreparedStatement pst = null;
-
-        try {
-            pst = con.prepareStatement(Constant.INSERT_USER);
-            pst.setString(1, user.getLogin());
-            pst.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        if(user != null)
+            try {
+                pst = con.prepareStatement(Constant.INSERT_USER);
+                pst.setString(1, user.getLogin());
+                pst.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
     }
 
     public List<User> findAllUsers(){
@@ -51,13 +51,14 @@ public class DBManager {
 
     public void insertTeam(Team team) {
         PreparedStatement pst = null;
-
-        try {
-            pst = con.prepareStatement(Constant.INSERT_TEAM);
-            pst.setString(1, team.getName());
-            pst.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if(team != null) {
+            try {
+                pst = con.prepareStatement(Constant.INSERT_TEAM);
+                pst.setString(1, team.getName());
+                pst.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -131,24 +132,26 @@ public class DBManager {
     }
 
     public void setTeamsForUser(User user, Team... teams){
-        int id = user.getId();
-        for(Team team: teams) {
-            try (PreparedStatement preparedStatement = con.prepareStatement(Constant.SET_TEAMS_FOR_USER)) {
-                con.setAutoCommit(false);
-                preparedStatement.setInt(1, team.getId());
-                preparedStatement.setInt(2, id);
-                con.commit();
-                preparedStatement.execute();
-            } catch (SQLException e) {
-                try {
-                    con.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                } finally {
+        if(user != null) {
+            int id = user.getId();
+            for (Team team : teams) {
+                try (PreparedStatement preparedStatement = con.prepareStatement(Constant.SET_TEAMS_FOR_USER)) {
+                    con.setAutoCommit(false);
+                    preparedStatement.setInt(1, team.getId());
+                    preparedStatement.setInt(2, id);
+                    con.commit();
+                    preparedStatement.execute();
+                } catch (SQLException | NullPointerException e) {
                     try {
-                        con.setAutoCommit(true);
+                        con.rollback();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
+                    } finally {
+                        try {
+                            con.setAutoCommit(true);
+                        } catch (SQLException ex) {
+                                ex.printStackTrace();
+                        }
                     }
                 }
             }
