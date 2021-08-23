@@ -42,9 +42,7 @@ public class DBManager {
     public List<User> findAllUsers(){
         Logger logger = Logger.getAnonymousLogger();
         List<User> users = new ArrayList<>();
-        Statement st = null;
-        try {
-            st = con.createStatement();
+        try (Statement st = con.createStatement()){
             ResultSet rs = st.executeQuery(Constant.SELECT_ALL_USERS);
 
             while (rs.next()){
@@ -61,7 +59,7 @@ public class DBManager {
         try(PreparedStatement pst =con.prepareStatement(Constant.INSERT_TEAM,Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, team.getName());
             pst.execute();
-            ResultSet rst = pst.getResultSet();
+            ResultSet rst = pst.getGeneratedKeys();
             if(rst.next()){
                 int id = rst.getInt(1);
                 team.setId(id);
