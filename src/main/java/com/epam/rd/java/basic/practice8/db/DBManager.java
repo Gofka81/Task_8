@@ -1,7 +1,10 @@
 package com.epam.rd.java.basic.practice8.db;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,8 +16,25 @@ public class DBManager {
 
     private static DBManager dbManager;
     private static Connection con;
+    private static Logger logger = Logger.getAnonymousLogger();;
 
     private DBManager() {
+        try {
+            con = DriverManager.getConnection(getURL());
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }
+    }
+
+    private String getURL() {
+        Properties properties = new Properties();
+        try (FileInputStream fis = new FileInputStream(Constant.CONNECTION_FILE_NAME);){
+
+            properties.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return properties.getProperty(Constant.URL_KEY);
     }
 
     public static DBManager getInstance() {
@@ -25,7 +45,6 @@ public class DBManager {
     }
 
     public void insertUser(User user)  {
-        Logger logger = Logger.getAnonymousLogger();
         try(PreparedStatement pst = con.prepareStatement(Constant.INSERT_USER, Statement.RETURN_GENERATED_KEYS)){
             pst.setString(1, user.getLogin());
             pst.execute();
@@ -40,7 +59,6 @@ public class DBManager {
     }
 
     public List<User> findAllUsers(){
-        Logger logger = Logger.getAnonymousLogger();
         List<User> users = new ArrayList<>();
         try (Statement st = con.createStatement()){
             ResultSet rs = st.executeQuery(Constant.SELECT_ALL_USERS);
@@ -55,7 +73,6 @@ public class DBManager {
     }
 
     public void insertTeam(Team team) {
-        Logger logger = Logger.getAnonymousLogger();
         try(PreparedStatement pst =con.prepareStatement(Constant.INSERT_TEAM,Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, team.getName());
             pst.execute();
@@ -70,7 +87,6 @@ public class DBManager {
     }
 
     public List<Team> findAllTeams() {
-        Logger logger = Logger.getAnonymousLogger();
         List<Team> teams = new ArrayList<>();
         Statement st = null;
         try {
@@ -87,7 +103,6 @@ public class DBManager {
     }
 
     public Team getTeam(String name) {
-        Logger logger = Logger.getAnonymousLogger();
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(Constant.GET_TEAM);
@@ -110,7 +125,6 @@ public class DBManager {
     }
 
     public User getUser(String login)  {
-        Logger logger = Logger.getAnonymousLogger();
         PreparedStatement pst = null;
         try{
             pst = con.prepareStatement(Constant.GET_USER);
@@ -133,7 +147,6 @@ public class DBManager {
     }
 
     public Connection getConnection(String connectionUrl){
-        Logger logger = Logger.getAnonymousLogger();
         try {
             con = DriverManager.getConnection(connectionUrl);
         } catch (SQLException e) {
@@ -144,7 +157,6 @@ public class DBManager {
 
     public void setTeamsForUser(User user, Team... teams){
         if(user != null) {
-            Logger logger = Logger.getAnonymousLogger();
             int id = user.getId();
             for (Team team : teams) {
                 try (PreparedStatement preparedStatement = con.prepareStatement(Constant.SET_TEAMS_FOR_USER)) {
@@ -171,7 +183,6 @@ public class DBManager {
     }
 
     public List<Team> getUserTeams(User user){
-        Logger logger = Logger.getAnonymousLogger();
         List<Team> teams = new ArrayList<>();
         try(PreparedStatement pst = con.prepareStatement(Constant.GET_TEAMS_FROM_USER)) {
             pst.setString(1,user.getLogin());
@@ -186,7 +197,6 @@ public class DBManager {
     }
 
     public void deleteTeam(Team team){
-        Logger logger = Logger.getAnonymousLogger();
         int id = team.getId();
         try(PreparedStatement pst = con.prepareStatement(Constant.DELETE_TEAM)){
             pst.setInt(1,id);
@@ -197,7 +207,6 @@ public class DBManager {
     }
 
     public void updateTeam(Team team){
-        Logger logger = Logger.getAnonymousLogger();
         int id = team.getId();
         try(PreparedStatement pst = con.prepareStatement(Constant.UPDATE_TEAM)){
             pst.setString(1,team.getName());
