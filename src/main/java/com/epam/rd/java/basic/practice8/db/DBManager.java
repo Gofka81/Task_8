@@ -28,11 +28,11 @@ public class DBManager {
 
     private String getURL() {
         Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream(Constant.CONNECTION_FILE_NAME);){
+        try (FileInputStream fis = new FileInputStream(Constant.CONNECTION_FILE_NAME)){
 
             properties.load(fis);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE,e.getMessage());
         }
         return properties.getProperty(Constant.URL_KEY);
     }
