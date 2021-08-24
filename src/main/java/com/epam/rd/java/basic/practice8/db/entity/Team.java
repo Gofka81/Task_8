@@ -46,9 +46,9 @@ public class Team {
     @Override
     public boolean equals(Object obj) {
         if(this == obj){return true;}
-        if(obj != null ||obj.getClass() != getClass()){return false;}
+        if(obj == null || getClass() != obj.getClass()){return false;}
         Team team = (Team) obj;
-        return getName().equals(team.getName());
+        return Objects.equals(name, team.getName());
     }
 
     @Override
