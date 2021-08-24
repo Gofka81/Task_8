@@ -18,8 +18,8 @@ public class Constant {
 
     public static final String SET_TEAMS_FOR_USER = "INSERT INTO teams_users(teams_id,users_id) VALUES(?,?)";
     public static final String GET_TEAMS_FROM_USER = "SELECT teams.id, teams.name FROM users_teams" +
-            " INNER JOIN teams ON teams_users.teams_id = teams.id" +
-            " INNER JOIN users ON teams_users.users_id = users.id" +
+            " INNER JOIN teams ON teams_id = teams.id" +
+            " INNER JOIN users ON users_id = users.id" +
             " WHERE users.login = ?";
 
     public static final String DELETE_TEAM = "DELETE FROM teams WHERE id = ?";
