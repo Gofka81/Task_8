@@ -170,12 +170,12 @@ public class DBManager {
                         con.rollback();
                     } catch (SQLException ex) {
                         logger.log(Level.SEVERE,ex.getMessage());;
-                    } finally {
-                        try {
-                            con.setAutoCommit(true);
-                        } catch (SQLException ex) {
-                            logger.log(Level.SEVERE,ex.getMessage());
-                        }
+                    }
+                } finally {
+                    try {
+                        con.setAutoCommit(true);
+                    } catch (SQLException ex) {
+                        logger.log(Level.SEVERE,ex.getMessage());
                     }
                 }
             }
