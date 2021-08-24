@@ -16,7 +16,7 @@ public class Constant {
     public static final String GET_USER = "SELECT id,login FROM users WHERE login = ?";
     public static final String GET_TEAM = "SELECT id,name FROM teams WHERE name = ?";
 
-    public static final String SET_TEAMS_FOR_USER = "INSERT INTO users_teams(teams_id,users_id) VALUES(?,?)";
+    public static final String SET_TEAMS_FOR_USER = "INSERT INTO users_teams(team_id,user_id) VALUES(?,?)";
     public static final String GET_TEAMS_FROM_USER = "SELECT teams.id, teams.name FROM users_teams" +
             " INNER JOIN teams ON users_teams.team_id = teams.id" +
             " INNER JOIN users ON users_teams.user_id = users.id" +
