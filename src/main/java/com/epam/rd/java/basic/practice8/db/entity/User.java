@@ -1,5 +1,7 @@
 package com.epam.rd.java.basic.practice8.db.entity;
 
+import java.util.Objects;
+
 public class User {
     private String login;
     private int id;
@@ -32,5 +34,13 @@ public class User {
     @Override
     public String toString() {
         return login;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj){return true;}
+        if(obj != null ||obj.getClass() != getClass()){return false;}
+        User user = (User) obj;
+        return getLogin().equals(user.getLogin());
     }
 }

@@ -1,5 +1,7 @@
 package com.epam.rd.java.basic.practice8.db.entity;
 
+import java.util.Objects;
+
 public class Team {
 
     private String name;
@@ -41,6 +43,16 @@ public class Team {
        return name;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj){return true;}
+        if(obj != null ||obj.getClass() != getClass()){return false;}
+        Team team = (Team) obj;
+        return getName().equals(team.getName());
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, id);
+    }
 }
