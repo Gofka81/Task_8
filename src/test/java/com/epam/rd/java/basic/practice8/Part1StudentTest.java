@@ -1,18 +1,13 @@
 package com.epam.rd.java.basic.practice8;
 
 import com.epam.rd.java.basic.practice8.db.DBManager;
-import com.epam.rd.java.basic.practice8.db.constant.Constant;
-import com.epam.rd.java.basic.practice8.db.entity.Team;
 import com.epam.rd.java.basic.practice8.db.entity.User;
 import org.junit.*;
 
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class Part1StudentTest {
     private static final String JDBC_DRIVER = "org.h2.Driver";
@@ -65,6 +60,19 @@ public class Part1StudentTest {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        Assert.assertEquals(user1,user2);
+        Assert.assertTrue(user1.getLogin().equals(user2.getLogin())&& user1.getId()== user2.getId());
+    }
+
+    @AfterClass
+    public static void tearDownDB(){
+        try (Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
+             Statement statement = con.createStatement()) {
+            connection = con;
+            String sql = "DROP TABLE users";
+
+            statement.executeUpdate(sql);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }
