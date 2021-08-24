@@ -15,8 +15,8 @@ import com.epam.rd.java.basic.practice8.db.entity.User;
 public class DBManager {
 
     private static DBManager dbManager;
-    private static Connection con;
-    private static Logger logger = Logger.getAnonymousLogger();;
+    private Connection con;
+    private static final Logger logger = Logger.getAnonymousLogger();
 
     private DBManager() {
         try {
@@ -45,10 +45,11 @@ public class DBManager {
     }
 
     public void insertUser(User user)  {
+        ResultSet rs = null;
         try(PreparedStatement pst = con.prepareStatement(Constant.INSERT_USER, Statement.RETURN_GENERATED_KEYS)){
             pst.setString(1, user.getLogin());
             pst.execute();
-            ResultSet rs = pst.getGeneratedKeys();
+            rs = pst.getGeneratedKeys();
             if(rs.next()){
                 int id = rs.getInt(1);
                 user.setId(id);
@@ -56,27 +57,46 @@ public class DBManager {
         } catch (SQLException | NullPointerException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }
+        finally {
+            if(rs != null){
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE,e.getMessage());
+                }
+            }
+        }
     }
 
     public List<User> findAllUsers(){
         List<User> users = new ArrayList<>();
+        ResultSet rs = null;
         try (Statement st = con.createStatement()){
-            ResultSet rs = st.executeQuery(Constant.SELECT_ALL_USERS);
+            rs = st.executeQuery(Constant.SELECT_ALL_USERS);
 
             while (rs.next()){
                 users.add(new User(rs.getString("login")));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
+        }finally {
+            if(rs!=null){
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE,e.getMessage());
+                }
+            }
         }
         return users;
     }
 
     public void insertTeam(Team team) {
+        ResultSet rst = null;
         try(PreparedStatement pst =con.prepareStatement(Constant.INSERT_TEAM,Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, team.getName());
             pst.execute();
-            ResultSet rst = pst.getGeneratedKeys();
+            rst = pst.getGeneratedKeys();
             if(rst.next()){
                 int id = rst.getInt(1);
                 team.setId(id);
@@ -84,14 +104,22 @@ public class DBManager {
         } catch (SQLException | NullPointerException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }
+        finally {
+            try {
+                if (rst != null) {
+                    rst.close();
+                }
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE,e.getMessage());
+            }
+        }
     }
 
     public List<Team> findAllTeams() {
         List<Team> teams = new ArrayList<>();
-        Statement st = null;
-        try {
-            st = con.createStatement();
-            ResultSet rs = st.executeQuery(Constant.SELECT_ALL_TEAMS);
+        ResultSet rs = null;
+        try(Statement st =con.createStatement()) {
+            rs = st.executeQuery(Constant.SELECT_ALL_TEAMS);
 
             while (rs.next()){
                 teams.add(new Team(rs.getString("name")));
@@ -99,15 +127,23 @@ public class DBManager {
         } catch (SQLException | NullPointerException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }
+        finally {
+            if(rs!=null){
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE,e.getMessage());
+                }
+            }
+        }
         return teams;
     }
 
     public Team getTeam(String name) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement(Constant.GET_TEAM);
+        ResultSet rs = null;
+        try (PreparedStatement pst= con.prepareStatement(Constant.GET_TEAM)){
             pst.setString(1,name);
-            ResultSet rs = pst.executeQuery();
+            rs = pst.executeQuery();
             if(rs.next())
                 return new Team(rs.getInt("id"),rs.getString("name"));
         } catch (SQLException | NullPointerException e) {
@@ -115,8 +151,8 @@ public class DBManager {
         }
         finally {
             try {
-                if(pst != null)
-                    pst.close();
+                if(rs != null)
+                    rs.close();
             } catch (SQLException e) {
                 logger.log(Level.SEVERE,e.getMessage());
             }
@@ -125,11 +161,10 @@ public class DBManager {
     }
 
     public User getUser(String login)  {
-        PreparedStatement pst = null;
-        try{
-            pst = con.prepareStatement(Constant.GET_USER);
+        ResultSet rs = null;
+        try(PreparedStatement pst = con.prepareStatement(Constant.GET_USER)){
             pst.setString(1,login);
-            ResultSet rs = pst.executeQuery();
+            rs = pst.executeQuery();
             if(rs.next())
                 return new User(rs.getInt("id"),rs.getString("login"));
         } catch (SQLException | NullPointerException e) {
@@ -137,8 +172,9 @@ public class DBManager {
         }
         finally {
             try {
-                if(pst != null)
-                    pst.close();
+                if(rs != null) {
+                    rs.close();
+                }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE,e.getMessage());
             }
@@ -169,7 +205,7 @@ public class DBManager {
                     try {
                         con.rollback();
                     } catch (SQLException ex) {
-                        logger.log(Level.SEVERE,ex.getMessage());;
+                        logger.log(Level.SEVERE,ex.getMessage());
                     }
                 } finally {
                     try {
@@ -184,14 +220,23 @@ public class DBManager {
 
     public List<Team> getUserTeams(User user){
         List<Team> teams = new ArrayList<>();
+        ResultSet rs = null;
         try(PreparedStatement pst = con.prepareStatement(Constant.GET_TEAMS_FROM_USER)) {
             pst.setString(1,user.getLogin());
-            ResultSet rst = pst.executeQuery();
-            while (rst.next()){
-                teams.add(new Team(rst.getString("name")));
+            rs = pst.executeQuery();
+            while (rs.next()){
+                teams.add(new Team(rs.getString("name")));
             }
         }catch (SQLException ex){
             logger.log(Level.SEVERE,ex.getMessage());
+        }finally {
+            if(rs!=null){
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE,e.getMessage());
+                }
+            }
         }
         return teams;
     }
@@ -207,7 +252,6 @@ public class DBManager {
     }
 
     public void updateTeam(Team team){
-        int id = team.getId();
         try(PreparedStatement pst = con.prepareStatement(Constant.UPDATE_TEAM)){
             pst.setString(1,team.getName());
             pst.setInt(2,team.getId());
