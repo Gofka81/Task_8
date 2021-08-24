@@ -43,4 +43,9 @@ public class User {
         User user = (User) obj;
         return getLogin().equals(user.getLogin());
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(login);
+    }
 }
