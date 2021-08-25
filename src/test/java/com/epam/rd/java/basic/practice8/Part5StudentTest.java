@@ -11,10 +11,7 @@ import org.junit.Test;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 
 public class Part5StudentTest {
@@ -83,9 +80,19 @@ public class Part5StudentTest {
 
     @Test
     public void shoudUpdateTeam(){
+        Team teamA = null;
         Team teamB = dbManager.getTeam("teamB");
         teamB.setName("teamX");
         dbManager.updateTeam(teamB);
-        Assert.assertEquals("teamX",dbManager.findAllTeams().get(0).getName());
+        try (Statement st = connection.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT id,name FROM teams ORDER BY id");
+            if (rs.next()){
+                teamA =new Team(rs.getInt("id"),rs.getString("name"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        Assert.assertEquals(teamA.getName(),teamB.getName());
     }
+
 }
