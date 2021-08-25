@@ -53,14 +53,20 @@ public class Part1StudentTest {
         User user2 = null;
         dbManager.insertUser(User.createUser("ivanov"));
         try (Statement st = connection.createStatement()) {
-            ResultSet rs = st.executeQuery("SELECT login FROM users ORDER BY id");
+            ResultSet rs = st.executeQuery("SELECT id ,login FROM users ORDER BY id");
             if (rs.next()){
-                user2 =new User(rs.getString("login"));
+                user2 = new User(rs.getInt("id"),rs.getString("login"));
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         Assert.assertTrue(user1.getLogin().equals(user2.getLogin())&& user1.getId()== user2.getId());
+    }
+
+    @Test
+    public void toStringUser(){
+        User user = new User(2,"taras");
+        Assert.assertEquals("taras",user.toString());
     }
 
     @AfterClass

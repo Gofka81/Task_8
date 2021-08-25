@@ -2,7 +2,6 @@ package com.epam.rd.java.basic.practice8;
 
 import com.epam.rd.java.basic.practice8.db.DBManager;
 import com.epam.rd.java.basic.practice8.db.entity.Team;
-import com.epam.rd.java.basic.practice8.db.entity.User;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -57,14 +56,20 @@ public class Part2StudentTest {
         Team team2 = null;
         dbManager.insertTeam(Team.createTeam("teamA"));
         try (Statement st = connection.createStatement()) {
-            ResultSet rs = st.executeQuery("SELECT name FROM teams ORDER BY id");
+            ResultSet rs = st.executeQuery("SELECT id,name FROM teams ORDER BY id");
             if (rs.next()){
-                team2 =new Team(rs.getString("name"));
+                team2 =new Team(rs.getInt("id"),rs.getString("name"));
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         Assert.assertTrue(team1.getName().equals(team2.getName())&& team1.getId()== team2.getId());
+    }
+
+    @Test
+    public void toStringTeam(){
+        Team team = new Team(2,"teamA");
+        Assert.assertEquals("teamA",team.toString());
     }
 
     @AfterClass

@@ -23,8 +23,8 @@ public class Part3StudentTest {
     private static DBManager dbManager;
     private static Connection connection;
 
-    @BeforeClass
-    public static void beforeTest(){
+    @Before
+    public void beforeTest(){
 
         try (OutputStream output = new FileOutputStream("app.properties")) {
             Properties prop = new Properties();
@@ -62,8 +62,8 @@ public class Part3StudentTest {
         dbManager.insertUser(User.createUser("teamB"));
     }
 
-    @AfterClass
-    public static void tearDownDB(){
+    @After
+    public void tearDownDB(){
         try (Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
              Statement statement = con.createStatement()) {
             connection = con;
@@ -79,7 +79,8 @@ public class Part3StudentTest {
 
     @Test
     public void shoudGetUserClassWithId(){
-        User user1 = new User(1,"ivanov");
+        User user1 = new User("ivanov");
+        user1.setId(1);
         User user2 = null;
         user2 = dbManager.getUser("ivanov");
         Assert.assertTrue(user1.getLogin().equals(user2.getLogin())&& user1.getId()== user2.getId());
@@ -87,7 +88,9 @@ public class Part3StudentTest {
 
     @Test
     public void shoudGetTeamClassWithId(){
-        Team team1 = new Team(1,"teamA");
+        Team team1 = new Team();
+        team1.setId(1);
+        team1.setName("ivanov");
         Team team2 = null;
         team2 = dbManager.getTeam("teamA");
         Assert.assertTrue(team1.getName().equals(team2.getName())&& team1.getId()== team2.getId());
