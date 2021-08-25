@@ -28,13 +28,13 @@ public class DBManager {
 
     private String getURL() {
         Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream(Constant.CONNECTION_FILE_NAME)){
+        try (FileInputStream fis = new FileInputStream("app.properties")){
 
             properties.load(fis);
         } catch (IOException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }
-        return properties.getProperty(Constant.URL_KEY);
+        return properties.getProperty("connection.url");
     }
 
     public static DBManager getInstance() {
@@ -46,7 +46,7 @@ public class DBManager {
 
     public void insertUser(User user)  {
         ResultSet rs = null;
-        try(PreparedStatement pst = con.prepareStatement(Constant.INSERT_USER, Statement.RETURN_GENERATED_KEYS)){
+        try(PreparedStatement pst = con.prepareStatement("INSERT INTO  users(login) VALUES(?)", Statement.RETURN_GENERATED_KEYS)){
             pst.setString(1, user.getLogin());
             pst.execute();
             rs = pst.getGeneratedKeys();
@@ -72,7 +72,7 @@ public class DBManager {
         List<User> users = new ArrayList<>();
         ResultSet rs = null;
         try (Statement st = con.createStatement()){
-            rs = st.executeQuery(Constant.SELECT_ALL_USERS);
+            rs = st.executeQuery("SELECT login FROM users ORDER BY id");
 
             while (rs.next()){
                 users.add(new User(rs.getString("login")));
@@ -93,7 +93,7 @@ public class DBManager {
 
     public void insertTeam(Team team) {
         ResultSet rst = null;
-        try(PreparedStatement pst =con.prepareStatement(Constant.INSERT_TEAM,Statement.RETURN_GENERATED_KEYS)) {
+        try(PreparedStatement pst =con.prepareStatement("INSERT INTO  teams(name) VALUES(?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, team.getName());
             pst.execute();
             rst = pst.getGeneratedKeys();
@@ -119,7 +119,7 @@ public class DBManager {
         List<Team> teams = new ArrayList<>();
         ResultSet rs = null;
         try(Statement st =con.createStatement()) {
-            rs = st.executeQuery(Constant.SELECT_ALL_TEAMS);
+            rs = st.executeQuery("SELECT name FROM teams ORDER BY id");
 
             while (rs.next()){
                 teams.add(new Team(rs.getString("name")));
@@ -141,7 +141,7 @@ public class DBManager {
 
     public Team getTeam(String name) {
         ResultSet rs = null;
-        try (PreparedStatement pst= con.prepareStatement(Constant.GET_TEAM)){
+        try (PreparedStatement pst= con.prepareStatement("SELECT id,name FROM teams WHERE name = ?")){
             pst.setString(1,name);
             rs = pst.executeQuery();
             if(rs.next())
@@ -162,7 +162,7 @@ public class DBManager {
 
     public User getUser(String login)  {
         ResultSet rs = null;
-        try(PreparedStatement pst = con.prepareStatement(Constant.GET_USER)){
+        try(PreparedStatement pst = con.prepareStatement("SELECT id,login FROM users WHERE login = ?")){
             pst.setString(1,login);
             rs = pst.executeQuery();
             if(rs.next())
@@ -195,7 +195,7 @@ public class DBManager {
         if(user != null) {
             int id = user.getId();
             for (Team team : teams) {
-                try (PreparedStatement preparedStatement = con.prepareStatement(Constant.SET_TEAMS_FOR_USER)) {
+                try (PreparedStatement preparedStatement = con.prepareStatement("INSERT INTO users_teams(team_id,user_id) VALUES(?,?)")) {
                     con.setAutoCommit(false);
                     preparedStatement.setInt(1, team.getId());
                     preparedStatement.setInt(2, id);
@@ -221,7 +221,10 @@ public class DBManager {
     public List<Team> getUserTeams(User user){
         List<Team> teams = new ArrayList<>();
         ResultSet rs = null;
-        try(PreparedStatement pst = con.prepareStatement(Constant.GET_TEAMS_FROM_USER)) {
+        try(PreparedStatement pst = con.prepareStatement("SELECT teams.id, teams.name FROM users_teams" +
+                " INNER JOIN teams ON users_teams.team_id = teams.id" +
+                " INNER JOIN users ON users_teams.user_id = users.id" +
+                " WHERE users.login = ?")) {
             pst.setString(1,user.getLogin());
             rs = pst.executeQuery();
             while (rs.next()){
@@ -243,7 +246,7 @@ public class DBManager {
 
     public void deleteTeam(Team team){
         int id = team.getId();
-        try(PreparedStatement pst = con.prepareStatement(Constant.DELETE_TEAM)){
+        try(PreparedStatement pst = con.prepareStatement("DELETE FROM teams WHERE id = ?")){
             pst.setInt(1,id);
             pst.execute();
         }catch (SQLException | NullPointerException ex){
@@ -252,7 +255,7 @@ public class DBManager {
     }
 
     public void updateTeam(Team team){
-        try(PreparedStatement pst = con.prepareStatement(Constant.UPDATE_TEAM)){
+        try(PreparedStatement pst = con.prepareStatement("UPDATE teams SET name = ? WHERE id = ?")){
             pst.setString(1,team.getName());
             pst.setInt(2,team.getId());
             pst.execute();
