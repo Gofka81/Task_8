@@ -1,7 +1,6 @@
 package com.epam.rd.java.basic.practice8;
 
 import com.epam.rd.java.basic.practice8.db.DBManager;
-import com.epam.rd.java.basic.practice8.db.constant.Constant;
 import com.epam.rd.java.basic.practice8.db.entity.Team;
 import com.epam.rd.java.basic.practice8.db.entity.User;
 
