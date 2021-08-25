@@ -245,41 +245,21 @@ public class DBManager {
 
     public void deleteTeam(Team team){
         int id = team.getId();
-        PreparedStatement pst = null;
-        try{
-            pst = con.prepareStatement("DELETE FROM teams WHERE id = ?");
+        try(PreparedStatement pst = con.prepareStatement("DELETE FROM teams WHERE id = ?")){
             pst.setInt(1,id);
             pst.execute();
         }catch (SQLException | NullPointerException ex){
             logger.log(Level.SEVERE,ex.getMessage());
-        }finally {
-            if(pst != null){
-                try {
-                    pst.close();
-                } catch (SQLException e) {
-                    logger.log(Level.SEVERE,e.getMessage());
-                }
-            }
         }
     }
 
     public void updateTeam(Team team){
-        PreparedStatement pst =null;
-        try{
-            pst = con.prepareStatement("UPDATE teams SET name = ? WHERE id = ?");
+        try(PreparedStatement pst = con.prepareStatement("UPDATE teams SET name = ? WHERE id = ?")){
             pst.setString(1,team.getName());
             pst.setInt(2,team.getId());
             pst.execute();
         }catch (SQLException | NullPointerException ex){
             logger.log(Level.SEVERE,ex.getMessage());
-        }finally {
-            if(pst != null){
-                try {
-                    pst.close();
-                } catch (SQLException e) {
-                    logger.log(Level.SEVERE,e.getMessage());
-                }
-            }
         }
     }
 

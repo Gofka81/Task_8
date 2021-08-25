@@ -73,6 +73,26 @@ public class Part2StudentTest {
         Assert.assertEquals("teamA",team.toString());
     }
 
+    @Test
+    public void testEquals(){
+        boolean check = true;
+        Team team1 = new Team(1,"ivanov");
+        Team team2 = null;
+        dbManager.insertTeam(Team.createTeam("ivanov"));
+        try (Statement st = connection.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT id ,name FROM teams ORDER BY id");
+            if (rs.next()){
+                team2 = new Team(rs.getInt("id"),rs.getString("name"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        if(!team1.equals(team2)){
+            check = false;
+        }
+        Assert.assertTrue(check);
+    }
+
     @AfterClass
     public static void tearDownDB(){
         try (Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
