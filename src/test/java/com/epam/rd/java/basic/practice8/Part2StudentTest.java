@@ -63,7 +63,8 @@ public class Part2StudentTest {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        Assert.assertTrue(team1.getName().equals(team2.getName())&& team1.getId()== team2.getId());
+        int id = team2.getId();
+        Assert.assertTrue(team1.getName().equals(team2.getName())&& team1.getId()== id);
     }
 
     @Test
