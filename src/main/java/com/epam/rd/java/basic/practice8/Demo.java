@@ -33,7 +33,7 @@ public class Demo {
 
         Properties properties = new Properties();
         Logger logger = Logger.getAnonymousLogger();
-        try(FileInputStream fis =new FileInputStream(Constant.CONNECTION_FILE_NAME)) {
+        try(FileInputStream fis =new FileInputStream("app.properties")) {
 
             properties.load(fis);
         } catch (IOException e) {
